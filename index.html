@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Estudo com Alexa</title>
+    <!-- Importação Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+    <style>
+        /* CSS direto no mesmo arquivo */
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    <input type="email" id="email" placeholder="E-mail">
+    <input type="password" id="password" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+    <button onclick="signup()">Cadastrar</button>
+
+    <h2>Adicionar Pergunta</h2>
+    <input type="text" id="question" placeholder="Pergunta">
+    <input type="text" id="answer" placeholder="Resposta">
+    <button onclick="saveQuestion()">Salvar Pergunta</button>
+
+    <script>
+        // Código JavaScript do Firebase integrado
+        const firebaseConfig = {
+            apiKey: "AIzaSyDyEGaiDl01EqZY9yC-wqZlyPinT7B68mU",
+            authDomain: "skill-2254c.firebaseapp.com",
+            projectId: "skill-2254c",
+            storageBucket: "skill-2254c.appspot.com",
+            messagingSenderId: "116776140406",
+            appId: "1:116776140406:web:ef4382dfc024b77159a957",
+            measurementId: "G-JW7X6736MC"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Funções de login e cadastro
+        async function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                alert("Login bem-sucedido!");
+            } catch (error) {
+                alert("Erro ao fazer login: " + error.message);
+            }
+        }
+
+        async function signup() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            try {
+                await auth.createUserWithEmailAndPassword(email, password);
+                alert("Cadastro bem-sucedido!");
+            } catch (error) {
+                alert("Erro ao cadastrar: " + error.message);
+            }
+        }
+
+        // Salvar perguntas no Firestore
+        async function saveQuestion() {
+            const user = auth.currentUser;
+            if (user) {
+                const question = document.getElementById("question").value;
+                const answer = document.getElementById("answer").value;
+                try {
+                    await db.collection("questions").add({
+                        uid: user.uid,
+                        question,
+                        answer
+                    });
+                    alert("Pergunta salva!");
+                } catch (error) {
+                    alert("Erro ao salvar pergunta: " + error.message);
+                }
+            } else {
+                alert("Faça login para salvar perguntas.");
+            }
+        }
+    </script>
+</body>
+</html>
